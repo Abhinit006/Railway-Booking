@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Ticket Booking</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f2f2f2;
+        }
+        
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+        
+        .header {
+            background-color: #3f51b5;
+            color: #fff;
+            padding: 10px;
+            text-align: center;
+            border-radius: 5px 5px 0 0;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        label {
+            display: block;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        
+        input[type="text"],
+        input[type="date"],
+        select,
+        input[type="number"] {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+        
+        .checkbox-group {
+            margin-top: 10px;
+        }
+        
+        .btn {
+            background-color: #3f51b5;
+            color: #fff;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+        
+        .btn:hover {
+            background-color: #283593;
+        }
+        
+        .search-results {
+            margin-top: 20px;
+            background-color: #f2f2f2;
+            padding: 10px;
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body ng-app="ticketBookingApp" ng-controller="TicketController as ctrl">
+    <div class="container">
+        <div class="header">
+            <h2>Book Ticket</h2>
+        </div>
+        <form>
+            <div class="form-group">
+                <label for="from">From</label>
+                <select id="from" ng-model="ctrl.from">
+                    <option value="">Select City</option>
+                    <option value="New Delhi">New Delhi</option>
+                    <option value="Mumbai">Mumbai</option>
+                    <option value="Kolkata">Kolkata</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="date">Date</label>
+                <input type="date" id="date" ng-model="ctrl.date" />
+            </div>
+            <div class="form-group">
+                <label for="to">To</label>
+                <select id="to" ng-model="ctrl.to">
+                    <option value="">Select City</option>
+                    <option value="New Delhi">New Delhi</option>
+                    <option value="Mumbai">Mumbai</option>
+                    <option value="Kolkata">Kolkata</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="class">Class</label>
+                <select id="class" ng-model="ctrl.class">
+                    <option value="">All Classes</option>
+                    <option value="First Class">First Class</option>
+                    <option value="Second Class">Second Class</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="category">Category</label>
+                <select id="category" ng-model="ctrl.category">
+                    <option value="GENERAL">GENERAL</option>
+                    <option value="LADIES">LADIES</option>
+                    <option value="SENIOR CITIZEN">SENIOR CITIZEN</option>
+                </select>
+            </div>
+            <div class="checkbox-group">
+                <label>
+                    <input type="checkbox" ng-model="ctrl.disability" /> Person With Disability Concession
+                </label>
+                <label>
+                    <input type="checkbox" ng-model="ctrl.flexibleDate" /> Flexible With Date
+                </label>
+                <label>
+                    <input type="checkbox" ng-model="ctrl.availableBerth" /> Train with Available Berth
+                </label>
+                <label>
+                    <input type="checkbox" ng-model="ctrl.passConcession" /> Railway Pass Concession
+                </label>
+            </div>
+            <div class="form-group">
+                <label for="seats">Number of Seats</label>
+                <input type="number" id="seats" ng-model="ctrl.seats" min="1" />
+            </div>
+            <div class="form-group">
+                <label for="cost">Cost per Seat</label>
+                <input type="number" id="cost" ng-model="ctrl.cost" min="500"/>
+            </div>
+            <div class="form-group">
+                <label>Total Cost</label>
+                <p>{{ ctrl.totalCost }}</p>
+            </div>
+            <div class="form-group">
+                <button class="btn" ng-click="ctrl.search()">Search</button>
+                <button class="btn" ng-click="ctrl.redirectToIRCTC()">Try booking in IRCTC</button>
+            </div>
+        </form>
+        <div class="search-results" ng-if="ctrl.searchResults.length > 0">
+            <h3>Search Results</h3>
+            <div ng-repeat="result in ctrl.searchResults"><label><input type="checkbox"/>
+                <p>From: {{ result.from }} (Departure: {{ result.departureTime }})</p>
+                <p>To: {{ result.to }} (Arrival: {{ result.arrivalTime }})</p></label>
+                <hr>
+            </div>
+        </div>
+        <div ng-if="ctrl.totalCost > 0">
+            <button class="btn" ng-click="ctrl.dummyPay()">Pay</button>
+        </div>
+    </div>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.2/angular.min.js"></script>
+    <script>
+        angular.module('ticketBookingApp', [])
+.controller('TicketController', function() {
+    var ctrl = this;
+    ctrl.from = '';
+    ctrl.to = '';
+    ctrl.date = '';
+    ctrl.class = '';
+    ctrl.category = 'GENERAL';
+    ctrl.disability = false;
+    ctrl.flexibleDate = false;
+    ctrl.availableBerth = false;
+    ctrl.passConcession = false;
+    ctrl.searchResults = [];
+    ctrl.totalCost = 0;
+    ctrl.seats = 1; // Default number of seats
+    ctrl.cost = 500; // Default cost per seat
+
+    ctrl.search = function() {
+        var searchData = {
+            from: ctrl.from,
+            to: ctrl.to,
+            date: ctrl.date,
+            class: ctrl.class,
+            category: ctrl.category,
+            disability: ctrl.disability,
+            flexibleDate: ctrl.flexibleDate,
+            availableBerth: ctrl.availableBerth,
+            passConcession: ctrl.passConcession
+        };
+
+        // Simulating search results
+        ctrl.searchResults = [
+            {
+                from: ctrl.from,
+                to: ctrl.to,
+                departureTime: '08:00 AM',
+                arrivalTime: '12:00 PM'
+            },
+            {
+                from: ctrl.from,
+                to: ctrl.to,
+                departureTime: '02:00 PM',
+                arrivalTime: '06:00 PM'
+            },
+            {
+                from: ctrl.from,
+                to: ctrl.to,
+                departureTime: '08:00 PM',
+                arrivalTime: '11:00 PM'
+            }
+        ];
+
+        // Calculate total cost based on the number of seats and cost per seat
+        ctrl.totalCost = ctrl.seats * ctrl.cost;
+    };
+
+    ctrl.redirectToIRCTC = function() {
+        window.location.href = 'https://www.irctc.co.in';
+    };
+
+    ctrl.dummyPay = function() {
+        // This is a dummy function, you can implement the actual payment logic here
+        alert('Payment successful!'); // For demonstration purposes
+    };
+});
+
+    </script>
+</body>
+</html>
+
