@@ -1,5 +1,5 @@
 angular.module('ticketBookingApp', [])
-.controller('TicketController', function() {
+.controller('TicketController', ['$scope', function($scope) {
     var ctrl = this;
     ctrl.from = '';
     ctrl.to = '';
@@ -13,19 +13,52 @@ angular.module('ticketBookingApp', [])
     ctrl.searchResults = [];
     ctrl.totalCost = 0;
     ctrl.seats = 1; // Default number of seats
-    ctrl.cost = 500; // Default cost per seat
+    ctrl.cities = ["New Delhi", "Mumbai", "Kolkata", "Chennai", "Bangalore", "Hyderabad", "Ahmedabad", "Pune", "Jaipur", "Lucknow", "Kanpur", "Nagpur", "Visakhapatnam", "Indore", "Thane", "Bhopal", "Patna", "Vadodara", "Ghaziabad", "Ludhiana", "Agra", "Nashik", "Faridabad", "Meerut", "Rajkot", "Kalyan-Dombivali", "Vasai-Virar", "Varanasi", "Srinagar", "Aurangabad", "Dhanbad", "Amritsar", "Navi Mumbai", "Allahabad", "Ranchi", "Howrah", "Coimbatore", "Jabalpur", "Gwalior", "Vijayawada", "Jodhpur", "Madurai", "Raipur", "Kota", "Guwahati", "Chandigarh"];
 
-        // Define available cities
-        ctrl.cities = ["New Delhi", "Mumbai", "Kolkata", "Chennai", "Bangalore", "Hyderabad", "Ahmedabad", "Pune", "Jaipur", "Lucknow", "Kanpur", "Nagpur", "Visakhapatnam", "Indore", "Thane", "Bhopal", "Patna", "Vadodara", "Ghaziabad", "Ludhiana", "Agra", "Nashik", "Faridabad", "Meerut", "Rajkot", "Kalyan-Dombivali", "Vasai-Virar", "Varanasi", "Srinagar", "Aurangabad", "Dhanbad", "Amritsar", "Navi Mumbai", "Allahabad", "Ranchi", "Howrah", "Coimbatore", "Jabalpur", "Gwalior", "Vijayawada", "Jodhpur", "Madurai", "Raipur", "Kota", "Guwahati", "Chandigarh"];
+    // Initialize filteredCities
+    ctrl.filteredCities = angular.copy(ctrl.cities);
 
-        // Function to filter "To" options based on selected "From" city
-        ctrl.filterToOptions = function(city) {
+    // Function to filter cities for "To" dropdown
+    ctrl.updateToCities = function() {
+        ctrl.filteredCities = ctrl.cities.filter(function(city) {
             return city !== ctrl.from;
-        };
+        });
+    };
 
-        // Define Indian states
-        ctrl.states = ["Andhra Pradesh", "Arunachal Pradesh", "Assam", "Bihar", "Chhattisgarh", "Goa", "Gujarat", "Haryana", "Himachal Pradesh", "Jharkhand", "Karnataka", "Kerala", "Madhya Pradesh", "Maharashtra", "Manipur", "Meghalaya", "Mizoram", "Nagaland", "Odisha", "Punjab", "Rajasthan", "Sikkim", "Tamil Nadu", "Telangana", "Tripura", "Uttar Pradesh", "Uttarakhand", "West Bengal"];
+    // Function to calculate cost based on selected cities
+    ctrl.calculateCost = function() {
+        // For demonstration, let's assume the cost is based on the distance between cities
+        // You can define a more complex logic here or use a cost matrix
+        if (ctrl.from && ctrl.to) {
+            // Example logic: cost increases with alphabetical distance between cities
+            var fromIndex = ctrl.cities.indexOf(ctrl.from);
+            var toIndex = ctrl.cities.indexOf(ctrl.to);
+            ctrl.cost = Math.abs(fromIndex - toIndex) * 100; // Example calculation
+        } else {
+            ctrl.cost = 0;
+        }
+        ctrl.calculateTotalCost();
+    };
 
+    // Function to calculate total cost
+    ctrl.calculateTotalCost = function() {
+        ctrl.totalCost = ctrl.seats * ctrl.cost;
+    };
+
+    // Watch for changes in "From" city and update "To" cities accordingly
+    $scope.$watch('ctrl.from', function(newVal, oldVal) {
+        if (newVal !== oldVal) {
+            ctrl.updateToCities();
+            ctrl.calculateCost(); // Recalculate cost whenever the "From" city changes
+        }
+    });
+
+    // Watch for changes in "To" city and recalculate the cost
+    $scope.$watch('ctrl.to', function(newVal, oldVal) {
+        if (newVal !== oldVal) {
+            ctrl.calculateCost(); // Recalculate cost whenever the "To" city changes
+        }
+    });
 
     ctrl.search = function() {
         var searchData = {
@@ -63,7 +96,7 @@ angular.module('ticketBookingApp', [])
         ];
 
         // Calculate total cost based on the number of seats and cost per seat
-        ctrl.totalCost = ctrl.seats * ctrl.cost;
+        ctrl.calculateTotalCost();
     };
 
     ctrl.redirectToIRCTC = function() {
@@ -71,7 +104,6 @@ angular.module('ticketBookingApp', [])
     };
 
     ctrl.dummyPay = function() {
-        // This is a dummy function, you can implement the actual payment logic here
-        alert('Payment successful!'); // For demonstration purposes
-    };
-});
+        alert('Payment successful!');
+    };
+}]);

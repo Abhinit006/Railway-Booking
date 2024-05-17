@@ -12,12 +12,9 @@
         <form>
             <div class="form-group">
                 <label for="from">From</label>
-                <select id="from" ng-model="ctrl.from">
+                <select id="from" ng-model="ctrl.from" ng-change="ctrl.updateToCities()">
                     <option value="">Select City</option>
-                    <option value="New Delhi">New Delhi</option>
-                    <option value="Mumbai">Mumbai</option>
-                    <option value="Kolkata">Kolkata</option>
-                    <!-- Add more cities here if needed -->
+                    <option ng-repeat="city in ctrl.cities" value="{{ city }}">{{ city }}</option>
                 </select>
             </div>
             <div class="form-group">
@@ -26,8 +23,9 @@
             </div>
             <div class="form-group">
                 <label for="to">To</label>
-                <select id="to" ng-model="ctrl.to" ng-options="city for city in ctrl.cities | filter: ctrl.filterToOptions">
+                <select id="to" ng-model="ctrl.to" ng-change="ctrl.calculateCost()">
                     <option value="">Select City</option>
+                    <option ng-repeat="city in ctrl.filteredCities" value="{{ city }}">{{ city }}</option>
                 </select>
             </div>
             <div class="form-group">
@@ -62,31 +60,33 @@
             </div>
             <div class="form-group">
                 <label for="seats">Number of Seats</label>
-                <input type="number" id="seats" ng-model="ctrl.seats" min="1" />
+                <input type="number" id="seats" ng-model="ctrl.seats" ng-change="ctrl.calculateTotalCost()" min="1" />
             </div>
             <div class="form-group">
                 <label for="cost">Cost per Seat</label>
-                <input type="number" id="cost" ng-model="ctrl.cost" min="500"/>
+                <input type="number" id="cost" ng-model="ctrl.cost" ng-change="ctrl.calculateTotalCost()" min="0"/>
             </div>
             <div class="form-group">
                 <label>Total Cost</label>
                 <p>{{ ctrl.totalCost }}</p>
             </div>
             <div class="form-group">
-                <button class="btn" ng-click="ctrl.search()">Search</button>
-                <button class="btn" ng-click="ctrl.redirectToIRCTC()">Try booking in IRCTC</button>
+                <button type="button" class="btn" ng-click="ctrl.search()">Search</button>
+                <button type="button" class="btn" ng-click="ctrl.redirectToIRCTC()">Try booking in IRCTC</button>
             </div>
         </form>
         <div class="search-results" ng-if="ctrl.searchResults.length > 0">
             <h3>Search Results</h3>
-            <div ng-repeat="result in ctrl.searchResults"><label><input type="checkbox"/>
-                <p>From: {{ result.from }} (Departure: {{ result.departureTime }})</p>
-                <p>To: {{ result.to }} (Arrival: {{ result.arrivalTime }})</p></label>
+            <div ng-repeat="result in ctrl.searchResults">
+                <label><input type="checkbox"/>
+                    <p>From: {{ result.from }} (Departure: {{ result.departureTime }})</p>
+                    <p>To: {{ result.to }} (Arrival: {{ result.arrivalTime }})</p>
+                </label>
                 <hr>
             </div>
         </div>
         <div ng-if="ctrl.totalCost > 0">
-            <button class="btn" ng-click="ctrl.dummyPay()">Pay</button>
+            <button type="button" class="btn" ng-click="ctrl.dummyPay()">Pay</button>
         </div>
     </div>
 
