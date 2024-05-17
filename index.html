@@ -2,77 +2,7 @@
 <html>
 <head>
     <title>Ticket Booking</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 0;
-            padding: 0;
-            background-color: #f2f2f2;
-        }
-        
-        .container {
-            max-width: 800px;
-            margin: 0 auto;
-            background-color: #fff;
-            padding: 20px;
-            border-radius: 5px;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-        }
-        
-        .header {
-            background-color: #3f51b5;
-            color: #fff;
-            padding: 10px;
-            text-align: center;
-            border-radius: 5px 5px 0 0;
-        }
-        
-        .form-group {
-            margin-bottom: 20px;
-        }
-        
-        label {
-            display: block;
-            font-weight: bold;
-            margin-bottom: 5px;
-        }
-        
-        input[type="text"],
-        input[type="date"],
-        select,
-        input[type="number"] {
-            width: 100%;
-            padding: 10px;
-            border: 1px solid #ccc;
-            border-radius: 4px;
-            box-sizing: border-box;
-        }
-        
-        .checkbox-group {
-            margin-top: 10px;
-        }
-        
-        .btn {
-            background-color: #3f51b5;
-            color: #fff;
-            padding: 10px 20px;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-            transition: background-color 0.3s ease;
-        }
-        
-        .btn:hover {
-            background-color: #283593;
-        }
-        
-        .search-results {
-            margin-top: 20px;
-            background-color: #f2f2f2;
-            padding: 10px;
-            border-radius: 4px;
-        }
-    </style>
+    <link rel="stylesheet" href="style.css">
 </head>
 <body ng-app="ticketBookingApp" ng-controller="TicketController as ctrl">
     <div class="container">
@@ -87,6 +17,7 @@
                     <option value="New Delhi">New Delhi</option>
                     <option value="Mumbai">Mumbai</option>
                     <option value="Kolkata">Kolkata</option>
+                    <!-- Add more cities here if needed -->
                 </select>
             </div>
             <div class="form-group">
@@ -95,11 +26,8 @@
             </div>
             <div class="form-group">
                 <label for="to">To</label>
-                <select id="to" ng-model="ctrl.to">
+                <select id="to" ng-model="ctrl.to" ng-options="city for city in ctrl.cities | filter: ctrl.filterToOptions">
                     <option value="">Select City</option>
-                    <option value="New Delhi">New Delhi</option>
-                    <option value="Mumbai">Mumbai</option>
-                    <option value="Kolkata">Kolkata</option>
                 </select>
             </div>
             <div class="form-group">
@@ -163,74 +91,6 @@
     </div>
 
     <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.2/angular.min.js"></script>
-    <script>
-        angular.module('ticketBookingApp', [])
-.controller('TicketController', function() {
-    var ctrl = this;
-    ctrl.from = '';
-    ctrl.to = '';
-    ctrl.date = '';
-    ctrl.class = '';
-    ctrl.category = 'GENERAL';
-    ctrl.disability = false;
-    ctrl.flexibleDate = false;
-    ctrl.availableBerth = false;
-    ctrl.passConcession = false;
-    ctrl.searchResults = [];
-    ctrl.totalCost = 0;
-    ctrl.seats = 1; // Default number of seats
-    ctrl.cost = 500; // Default cost per seat
-
-    ctrl.search = function() {
-        var searchData = {
-            from: ctrl.from,
-            to: ctrl.to,
-            date: ctrl.date,
-            class: ctrl.class,
-            category: ctrl.category,
-            disability: ctrl.disability,
-            flexibleDate: ctrl.flexibleDate,
-            availableBerth: ctrl.availableBerth,
-            passConcession: ctrl.passConcession
-        };
-
-        // Simulating search results
-        ctrl.searchResults = [
-            {
-                from: ctrl.from,
-                to: ctrl.to,
-                departureTime: '08:00 AM',
-                arrivalTime: '12:00 PM'
-            },
-            {
-                from: ctrl.from,
-                to: ctrl.to,
-                departureTime: '02:00 PM',
-                arrivalTime: '06:00 PM'
-            },
-            {
-                from: ctrl.from,
-                to: ctrl.to,
-                departureTime: '08:00 PM',
-                arrivalTime: '11:00 PM'
-            }
-        ];
-
-        // Calculate total cost based on the number of seats and cost per seat
-        ctrl.totalCost = ctrl.seats * ctrl.cost;
-    };
-
-    ctrl.redirectToIRCTC = function() {
-        window.location.href = 'https://www.irctc.co.in';
-    };
-
-    ctrl.dummyPay = function() {
-        // This is a dummy function, you can implement the actual payment logic here
-        alert('Payment successful!'); // For demonstration purposes
-    };
-});
-
-    </script>
+    <script src="app.js"></script>
 </body>
 </html>
-

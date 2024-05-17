@@ -1,0 +1,22 @@
+<!doctype html>
+<html ng-app="careerGuide">
+<head>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/angular.js/1.4.7/angular.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/angular.js/1.4.7/angular-route.min.js"></script>
+  <link rel="stylesheet" type="text/css" href="mainstyle.css">
+</head>
+<body>
+  <div class="main">
+    <div class="content">
+        <h1>Welcome To <br><span> Indian Railway</span> <br></h1>
+            <button class="cn"><a href="index.html">Book Ticket</a></button>
+  <script src="https://unpkg.com/ionicons@5.4.0/dist/ionicons.js">
+    var app = angular.module('careerGuide', ['ngRoute']);
+
+    
+    app.controller('mainController', function($scope) {
+      $scope.message = 'Welcome to Career Guidance!';
+    });
+  </script>
+</body>
+</html>
